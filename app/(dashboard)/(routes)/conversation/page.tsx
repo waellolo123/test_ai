@@ -42,6 +42,7 @@ const ConversationPage = () => {
       });
       setMessages((current)=>[...current, userMessage, response.data]);
       form.reset();
+
     } catch (error:any) {
       console.log(error);
       
@@ -72,7 +73,7 @@ const ConversationPage = () => {
                <Input 
                className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent" 
                disabled={isLoading} 
-               placeholder="Example: How to Generate a clean code for relation between front and back... "
+               placeholder="Example: How do i calculate the radius of a circle... "
                {...field}
                />
               </FormControl>

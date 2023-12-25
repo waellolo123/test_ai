@@ -5,16 +5,21 @@ import Configuration from "openai"
 import ChatCompletionRequestMessage from "openai"
 
 
-const configuration = new Configuration({
+// const configuration = new Configuration({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
+
+// const openai = new OpenAI(configuration);
+
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const openai = new OpenAI(configuration);
 
-const instructionMessage: ChatCompletionRequestMessage = {
-  role: "system",
-  content: "You are a code generator. You must answer only in markdown code snippets. Use code comments for explanations."
-}
+// const instructionMessage: ChatCompletionRequestMessage = {
+//   role: "system",
+//   content: "You are a code generator. You must answer only in markdown code snippets. Use code comments for explanations."
+// }
 
 export async function POST(req: Request){
   try {
@@ -24,7 +29,7 @@ export async function POST(req: Request){
     if(!userId){
       return new NextResponse("Unauthorized", {status: 401});
     }
-    if(!configuration.apiKey){
+    if(!openai.apiKey){
       return new NextResponse("OpenAi API key not configured", {status: 500});
     }
     if(!messages){
@@ -32,7 +37,7 @@ export async function POST(req: Request){
     }
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [instructionMessage, ...messages]
+      messages: [...messages]
     });
     return NextResponse.json(response.choices[0].message);
   } catch (error) {
