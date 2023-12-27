@@ -11,14 +11,13 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import ChateCompletionRequestMessage from "openai";
 import { Empty } from "@/components/Empty";
 import { Loader } from "@/components/Loader";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { useProModal } from "@/hooks/use-pro-model";
 
 
 const MusicPage = () => {
+  const proModal = useProModal();
   const [music, setMusic] = useState<string>();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,7 +35,9 @@ const MusicPage = () => {
       setMusic(response.data.audio);
       form.reset();
     } catch (error:any) {
-      console.log(error);
+      if(error?.response?.status === 403){
+        proModal.onOpen();
+      }
       
     } finally {
       router.refresh();
