@@ -1,6 +1,6 @@
 
 
-const Layout = ({children}: {children: React.ReactNode}) => {
+const LandingLayout = ({children}: {children: React.ReactNode}) => {
   return (
     <main className="h-full bg-[#111827] overflow-auto">
       <div className="mx-auto max-w-screen-xl h-full">
@@ -10,4 +10,5 @@ const Layout = ({children}: {children: React.ReactNode}) => {
   )
 }
 
-export default Layout
+export default LandingLayout;
+

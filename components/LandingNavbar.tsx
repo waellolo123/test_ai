@@ -15,9 +15,9 @@ const LandingNavbar = () => {
  const {isSignedIn} = useAuth();
 
   return (
-    <div className="">
+    <nav className="p-4 bg-transparent flex items-center justify-between">
       
-    </div>
+    </nav>
   )
 }
 
