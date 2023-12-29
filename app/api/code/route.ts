@@ -4,6 +4,7 @@ import {OpenAI} from "openai";
 import Configuration from "openai"
 import ChatCompletionRequestMessage from "openai"
 import { checkApiLimit, increaseApiLimit } from "@/lib/api-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 
 // const configuration = new Configuration({
@@ -36,6 +37,7 @@ export async function POST(req: Request){
     if(!messages){
       return new NextResponse("Messages are required", {status: 400});
     }
+    const isPro = await checkSubscription();
     const freeTrial = await checkApiLimit();
     if(!freeTrial){
       return new NextResponse("You have exceeded your API limit for this month.",{ status : 403});
@@ -44,7 +46,9 @@ export async function POST(req: Request){
       model: "gpt-3.5-turbo",
       messages: [...messages]
     });
-    await increaseApiLimit();
+    if(!isPro){
+      await increaseApiLimit();
+    }
     return NextResponse.json(response.choices[0].message);
   } catch (error) {
     console.log("[CODE_ERROR]", error);

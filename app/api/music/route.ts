@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 import { checkApiLimit, increaseApiLimit } from "@/lib/api-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 
 const replicate = new Replicate({
@@ -22,7 +23,8 @@ export async function POST(req: Request){
       return new NextResponse("prompt is required", {status: 400});
     }
     const freeTrial = await checkApiLimit();
-    if(!freeTrial){
+    const isPro = await checkSubscription();
+    if(!freeTrial && !isPro){
       return new NextResponse("You have exceeded your API limit for this month.",{ status : 403});
     }
     const response = await replicate.run(
@@ -34,7 +36,9 @@ export async function POST(req: Request){
       }
     );
     console.log(response);
-    await increaseApiLimit();
+    if(!isPro){
+      await increaseApiLimit();
+    }
     return NextResponse.json(response);
   } catch (error) {
     console.log("[MUSIC_ERROR]", error);

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {OpenAI} from "openai";
 import Configuration from "openai";
 import { checkApiLimit, increaseApiLimit } from "@/lib/api-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 
 const configuration = new Configuration({
@@ -32,17 +33,19 @@ export async function POST(req){
       return new NextResponse("resolution are required", {status: 400});
     }
     const freeTrial = await checkApiLimit();
-    if(!freeTrial){
+    const isPro = await checkSubscription();
+    if(!freeTrial && !isPro){
       return new NextResponse("You have exceeded your API limit for this month.",{ status : 403});
     }
-
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: "a white siamese cat",
       n: 1,
       size: "1024x1024",
     });
-    await increaseApiLimit();
+    if(!isPro){
+      await increaseApiLimit();
+    }
     image_url = response.data.data[0].url;
     return NextResponse.json(image_url);
   } catch (error) {
